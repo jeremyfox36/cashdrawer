@@ -41,22 +41,15 @@ var result = [];//holds the relevant denoms from cid with their total values
 cid.forEach(function(item){//go through cid and get all the denoms needed to make up change
 	filteredDenoms.forEach(function(denom){
 		if(item[0] === denom[0]){
-			result.push(item);
+			result.push([...item, denom[1]]);//results in a 2D array of the cid and unit values that I can use to make up change
+      console.log(result);
     }
   })
 })
 
-while (changeAmount > 0){
-  //debugger;
   for(let i=result.length-1; i>=0; i--){
     //if the amount in this denomination is enough then push it all to change.change
-    if(result[i][1] >=changeAmount){
-      change.change.push(result[i])
-      changeAmount = changeAmount - result[i][1]
-    }
-  ;
   }
-}
 
 
 //console.log(changeAmount);
@@ -72,7 +65,6 @@ while (changeAmount > 0){
 
 return change;
 }
-
 // Example cash-in-drawer array:
 // [["PENNY", 1.01],
 // ["NICKEL", 2.05],
