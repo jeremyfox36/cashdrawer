@@ -3,21 +3,23 @@ function checkCashRegister(price, cash, cid) {
     status: "",
     change: []
   };
-  var denominations = {
-"PENNY": 0.01,
-"NICKEL": 0.05,
-"DIME": 0.1,
-"QUARTER": 0.25,
-"DOLLAR": 1,
-"FIVE": 5,
-"TEN": 10,
-"TWENTY": 20,
-"ONE HUNDRED": 100}
+  var denoms = [
+    ["PENNY", 0.01],
+    ["NICKEL", 0.05],
+    ["DIME", 0.1],
+    ["QUARTER", 0.25],
+    ["DOLLAR", 1],
+    ["FIVE", 5],
+    ["TEN", 10],
+    ["TWENTY", 20],
+    ["ONE HUNDRED", 100]
+    ]
 
-  //subtract price from payment
+
+//subtract price from payment
 var changeAmount = Math.abs(price - cash); 
-  // Here is your change, ma'am.
-//get the total cid so that we can check if there's enough
+
+//get the total cid so that we can check if there's enough in the cash drawer
 var totalcid = cid.reduce((total, denom) => total + denom[1],0);
 
 //initial return is not enough change or change is the same as cid
@@ -27,15 +29,16 @@ if(changeAmount > totalcid){
 } else if(changeAmount === totalcid){
   change.status = "CLOSED";
   change.change = cid;
+  //last optipn is to work out what change to give
 } else{
   change.status = "OPEN";
-  change.change = calculateChange
+  change.change = [];
 }
 //find all denominations less than changeAmount
 var filteredDenoms = denoms.filter(denom => denom[1] < changeAmount);
-var result = [];//holds the relevant denoms from cid
+var result = [];//holds the relevant denoms from cid with their total values
 
-cid.forEach(function(item){//go through cid and get all the denoms need to make up change
+cid.forEach(function(item){//go through cid and get all the denoms needed to make up change
 	filteredDenoms.forEach(function(denom){
 		if(item[0] === denom[0]){
 			result.push(item);
@@ -43,6 +46,21 @@ cid.forEach(function(item){//go through cid and get all the denoms need to make 
   })
 })
 
+while (changeAmount > 0){
+  //debugger;
+  for(let i=result.length-1; i>=0; i--){
+    //if the amount in this denomination is enough then push it all to change.change
+    if(result[i][1] >=changeAmount){
+      change.change.push(result[i])
+      changeAmount = changeAmount - result[i][1]
+    }
+  ;
+  }
+}
+
+
+//console.log(changeAmount);
+//console.log(result);
 //find biggest denomination less than changeAmount
 
 // subtract this amount from changeAmount
