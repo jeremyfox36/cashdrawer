@@ -1,5 +1,5 @@
 function checkCashRegister(price, cash, cid) {
-  var change = {
+  var returnObj = {
     status: "",
     change: []
   };
@@ -15,7 +15,6 @@ function checkCashRegister(price, cash, cid) {
     ["ONE HUNDRED", 100]
     ]
 
-
 //subtract price from payment
 var changeAmount = Math.abs(price - cash); 
 
@@ -24,15 +23,15 @@ var totalcid = cid.reduce((total, denom) => total + denom[1],0);
 
 //initial return is not enough change or change is the same as cid
 if(changeAmount > totalcid){
-  change.status = "INSUFFICIENT_FUNDS";
-  change.change = [];
+  returnObj.status = "INSUFFICIENT_FUNDS";
+  returnObj.change = [];
 } else if(changeAmount === totalcid){
-  change.status = "CLOSED";
-  change.change = cid;
+  returnObj.status = "CLOSED";
+  returnObj.change = cid;
   //last optipn is to work out what change to give
 } else{
-  change.status = "OPEN";
-  change.change = [];
+  returnObj.status = "OPEN";
+  returnObj.change = [];
 }
 //find all denominations less than changeAmount
 var filteredDenoms = denoms.filter(denom => denom[1] < changeAmount);
@@ -41,38 +40,36 @@ var result = [];//holds the relevant denoms from cid with their total values
 cid.forEach(function(item){//go through cid and get all the denoms needed to make up change
 	filteredDenoms.forEach(function(denom){
 		if(item[0] === denom[0]){
-			result.push([...item, denom[1]]);//results in a 2D array of the cid and unit values that I can use to make up change
+			result.push([...item, denom[1]]);//results in a 2D array of the cid that I can use to make up change
       console.log(result);
     }
   })
 })
-
-  for(let i=result.length-1; i>=0; i--){
-    //if the amount in this denomination is enough then push it all to change.change
+result = result.reverse();//change so it goes form high to low denominations because the highest is checked first then
+//pushed ot the result array change.change
+for(let i=0; i<=result.length; i++){
+debugger;
+  var thisDenom = 0;
+  var changeArr = [];
+  while(changeAmount >0 && result[i][1] >0){
+    //create a temporary array to hold the first denom for change
+    
+    changeAmount -= result[i][2];
+    result[i][1] -= result[i][2];
+	
+	thisDenom += result[i][2];//variable to track amount of this denom
+	changeArr[i] = [result[i][0], thisDenom];
   }
-
-//adding this bit as a reminder of how to structure the loop
-	result.forEach(function(item, index){
-	//debugger;
-	while(item[1] >0 && changeAmount >0){
-		item[1] -= item[2]//subtract denomination from totalcid
-		changeAmount -= item[2]//subtract denomination from change
-		change.change.push(item[0])//push this denomination to the chage array
+returnObj.change.push(changeArr);
+if(changeAmount == 0){
+	break;
+}
 }
 
-})
-//console.log(changeAmount);
-//console.log(result);
-//find biggest denomination less than changeAmount
-
-// subtract this amount from changeAmount
-// add this amount to change.change
-// subtract this amount from your cash drawer (so if $1 is the highest amount then take $1 out of cash drawer
-// repeat until you have gone through the smallest coin you have available in your cash drawer
 // if after going through all coins you find that your changeOwed is > $0.00 then return insuffient funds
 // else if changeOwed is $0.00 then return your array of coins you will give as change
 
-return change;
+return returnObj;
 }
 // Example cash-in-drawer array:
 // [["PENNY", 1.01],
