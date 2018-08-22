@@ -51,7 +51,16 @@ cid.forEach(function(item){//go through cid and get all the denoms needed to mak
     //if the amount in this denomination is enough then push it all to change.change
   }
 
+//adding this bit as a reminder of how to structure the loop
+	result.forEach(function(item, index){
+	//debugger;
+	while(item[1] >0 && changeAmount >0){
+		item[1] -= item[2]//subtract denomination from totalcid
+		changeAmount -= item[2]//subtract denomination from change
+		change.change.push(item[0])//push this denomination to the chage array
+}
 
+})
 //console.log(changeAmount);
 //console.log(result);
 //find biggest denomination less than changeAmount
